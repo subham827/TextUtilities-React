@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+
+   import React, { useState } from "react";
 
 export default function Forms(props) {
-  let ss = document.getElementById("ss0");
-  let ss1 = document.getElementById("ss1");
+  
   const handleOnChange = (e) => {
-    // console.log("Text changed");
 
     setText(e.target.value);
+    
   };
   const handleUpClick = () => {
     console.log("Up clicked");
@@ -24,42 +24,59 @@ export default function Forms(props) {
     setText("");
   };
   const addnote = () => {
+    if (!text) {
+      alert("Please enter text");
+      return;
     
       
-    
-    console.log("add note clicked");
-    // deletetext();
-    
-    setNotes([...notes, text]);
+    }
+    else if(text && !toggle){
+      setNotes(notes.map((note) => {
+        if (note.id === isEdit) {
+          
+        
+        return {...note, name:text }
+      
+      }
+      }))
+      setToggle(true);
+      setText("");
+    }
+    else
+    {console.log("add note clicked");
+    const inputText = { id: new Date().getTime().toString(), name: text };
+    setNotes([...notes, inputText]);
     setText('');
-
-    // ss.innerHTML = text;
-
-    deletetext();
-    
+    deletetext();}
   };
   const ClearAll = () => {
     console.log("Clear all clicked");
     setText("");
     setNotes([]);
   }
-  const Removenote = (index) => {
+  const Removenote = (id) => {
     console.log("Remove note clicked");
-    console.log(index);
-  
-    const updatedNotes = notes.filter((elem, indexa) => {
-      return index !== indexa;
-    })
+    console.log(id);
+   const updatedNotes = notes.filter(note => note.id !== id);
     setNotes(updatedNotes);
-
-
   }
   
-  
-  
+  const Editnote = (index) => {
+   console.log("Edit note clicked");
+   let neweditnote = notes.find((note) => note.id === index);
+   
+   setToggle(false);
+   setText(neweditnote.name);
+   setIsEdit(index)
+
+  }
   const [text, setText] = useState("");
+  const [toggle, setToggle] = useState(true);
+  const [isEdit, setIsEdit] = useState(null);
   
   const [notes, setNotes] = useState([]);
+  
+  const [seconds, setSeconds] = useState(0);
   let a = text.split(" ");
   let b =0;
   let c=0;
@@ -72,9 +89,8 @@ export default function Forms(props) {
           b++;
       }
       // console.log(a[index]);
-      
-      
   }
+  console.log(notes);
 
   return (
     <>
@@ -111,9 +127,12 @@ export default function Forms(props) {
         <button className="btn btn-danger mx-1" onClick={deletetext}>
           Delete Text
         </button>
-        <button className="btn btn-secondary mx-1" onClick={addnote}>
-          Add notes
-        </button>
+       {
+         toggle ? ( <button className="btn btn-secondary mx-1" onClick={addnote}>
+         Add note  </button>):( <button className="btn btn-success mx-1" onClick={addnote}>
+          Edit note
+        </button>)
+       }
       </div>
       <div className="container my-2">
         <h1 style={{ color: props.mode === "dark" ? "white" : "black" }}>
@@ -130,9 +149,14 @@ export default function Forms(props) {
           Your Notes
           <br></br>
           <div className="container my-2">
-          {notes.map((note,index) => (
-            <li key={index} style={{fontSize: 20}}>{note} <button className="btn btn-danger btn-sm"  onClick={ ( ) =>Removenote(index)}>Remove</button></li>
-          
+          {notes.map((note) => (
+            
+            
+            <li key={note.id} style={{fontSize: 20}}>{note.name} <button className="btn btn-danger btn-sm"  onClick={ ( ) =>Removenote(note.id)}>Remove</button>
+            <button className="btn btn-primary mx-2" onClick={()=>Editnote(note.id)}>Edit</button>
+            </li>
+           
+            
             
           ))}
           </div>
